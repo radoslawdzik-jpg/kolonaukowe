@@ -16,6 +16,7 @@ type NewsItem = {
   excerpt: string
   publishedAt: string
   category?: string
+  slug: string
 }
 
 async function getNews(): Promise<NewsItem[]> {
@@ -24,13 +25,15 @@ async function getNews(): Promise<NewsItem[]> {
       title,
       excerpt,
       publishedAt,
-      "category": "News"
+      "category": "News",
+      "slug": slug.current
     }
   `)
 }
 
 function formatDate(date?: string) {
   if (!date) return ""
+
   return new Intl.DateTimeFormat("en", {
     month: "long",
     day: "numeric",
@@ -59,7 +62,7 @@ export async function NewsSection() {
           </div>
 
           <Link
-            href="#"
+            href="/news"
             className="inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors font-medium"
           >
             View all news
@@ -68,23 +71,32 @@ export async function NewsSection() {
         </div>
 
         <div className="grid lg:grid-cols-2 gap-6">
+          {/* Featured news */}
           <Card className="bg-background border-primary/30 lg:row-span-2 hover:border-primary/50 transition-colors">
             <CardHeader>
               <div className="flex items-center gap-3 mb-2">
                 <Badge className="bg-primary text-primary-foreground">
                   {newsItems[0].category || "News"}
                 </Badge>
+
                 <span className="text-sm text-muted-foreground flex items-center gap-1">
                   <Calendar className="w-4 h-4" />
                   {formatDate(newsItems[0].publishedAt)}
                 </span>
               </div>
-              <CardTitle className="text-2xl">{newsItems[0].title}</CardTitle>
+
+              <CardTitle className="text-2xl">
+                {newsItems[0].title}
+              </CardTitle>
             </CardHeader>
+
             <CardContent>
-              <p className="text-muted-foreground mb-6">{newsItems[0].excerpt}</p>
+              <p className="text-muted-foreground mb-6">
+                {newsItems[0].excerpt}
+              </p>
+
               <Link
-                href="#"
+                href={`/news/${newsItems[0].slug}`}
                 className="inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors font-medium"
               >
                 Read more
@@ -93,29 +105,34 @@ export async function NewsSection() {
             </CardContent>
           </Card>
 
+          {/* Other news */}
           {newsItems.slice(1).map((news) => (
-            <Card
-              key={news.title}
-              className="bg-background hover:border-primary/50 transition-colors group cursor-pointer"
-            >
-              <CardHeader className="pb-2">
-                <div className="flex items-center gap-3">
-                  <Badge variant="secondary">{news.category || "News"}</Badge>
-                  <span className="text-sm text-muted-foreground flex items-center gap-1">
-                    <Calendar className="w-4 h-4" />
-                    {formatDate(news.publishedAt)}
-                  </span>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <h3 className="font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
-                  {news.title}
-                </h3>
-                <p className="text-sm text-muted-foreground line-clamp-2">
-                  {news.excerpt}
-                </p>
-              </CardContent>
-            </Card>
+            <Link key={news.slug} href={`/news/${news.slug}`}>
+              <Card className="bg-background hover:border-primary/50 transition-colors group cursor-pointer h-full">
+                <CardHeader className="pb-2">
+                  <div className="flex items-center gap-3">
+                    <Badge variant="secondary">
+                      {news.category || "News"}
+                    </Badge>
+
+                    <span className="text-sm text-muted-foreground flex items-center gap-1">
+                      <Calendar className="w-4 h-4" />
+                      {formatDate(news.publishedAt)}
+                    </span>
+                  </div>
+                </CardHeader>
+
+                <CardContent>
+                  <h3 className="font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
+                    {news.title}
+                  </h3>
+
+                  <p className="text-sm text-muted-foreground line-clamp-2">
+                    {news.excerpt}
+                  </p>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
       </div>
