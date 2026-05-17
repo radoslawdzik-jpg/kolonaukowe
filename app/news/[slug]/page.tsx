@@ -45,9 +45,7 @@ export default async function NewsPage({
     notFound()
   }
 
-  const imageUrl = news.image
-    ? urlFor(news.image).width(1200).url()
-    : null
+  const imageUrl = news.image ? urlFor(news.image).width(1200).url() : null
 
   return (
     <main className="min-h-screen bg-background text-foreground py-24">
@@ -72,7 +70,7 @@ export default async function NewsPage({
         <h1 className="text-4xl font-bold mb-6">{news.title}</h1>
 
         {news.excerpt && (
-          <p className="text-xl text-muted-foreground mb-10">
+          <p className="text-xl text-muted-foreground mb-10 whitespace-pre-line">
             {news.excerpt}
           </p>
         )}
@@ -89,9 +87,32 @@ export default async function NewsPage({
           </div>
         )}
 
-        <article className="prose prose-invert max-w-none">
-          {news.body ? <PortableText value={news.body} /> : null}
-        </article>
+        {news.body && (
+          <article className="max-w-none">
+            <PortableText
+              value={news.body}
+              components={{
+                block: {
+                  normal: ({ children }) => (
+                    <p className="mb-6 leading-8 text-muted-foreground">
+                      {children}
+                    </p>
+                  ),
+                  h2: ({ children }) => (
+                    <h2 className="text-2xl font-bold mt-10 mb-4 text-foreground">
+                      {children}
+                    </h2>
+                  ),
+                  h3: ({ children }) => (
+                    <h3 className="text-xl font-semibold mt-8 mb-3 text-foreground">
+                      {children}
+                    </h3>
+                  ),
+                },
+              }}
+            />
+          </article>
+        )}
       </div>
     </main>
   )
